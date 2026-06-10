@@ -1,16 +1,21 @@
 # main/views.py
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpRequest
 from django.shortcuts import render, get_object_or_404, redirect
+from django.core.paginator import Paginator
 from .models import Course, Student
 from .forms import CourseForm, StudentForm
+
 
 def index(request):
     courses = Course.objects.all()
     students = Student.objects.all()
+    p=Paginator(students, 2)
+    page=p.page(request.GET.get('page', 1))
+
     context = {
         'courses': courses,
-        'students': students,
+        'page':page
     }
     return render(request, 'main/index.html', context)
 
@@ -32,7 +37,8 @@ def student_detail(request, student_id):
     }
     return render(request, 'main/student_detail.html', context)
 
-
+@login_required(login_url='login')
+@permission_required('main.add_course')
 def course_create(request:HttpRequest):
     if request.user.is_authenticated:
         if request.method == "POST":
@@ -47,8 +53,8 @@ def course_create(request:HttpRequest):
     }
     return render(request, 'main/course_create.html', context)
 
-
-
+@login_required(login_url='login')
+@permission_required('main.add_student')
 def student_create(request:HttpRequest):
     if request.user.is_authenticated:
         if request.method == "POST":
@@ -63,6 +69,8 @@ def student_create(request:HttpRequest):
     }
     return render(request, 'main/student_create.html', context)
 
+@login_required(login_url='login')
+@permission_required('main.change_course')
 def course_update(request:HttpRequest, course_id:int):
     course=Course.objects.get(pk=course_id)
     if request.method=='POST':
@@ -77,6 +85,8 @@ def course_update(request:HttpRequest, course_id:int):
     }
     return render(request, 'main/course_update.html', context)
 
+@login_required(login_url='login')
+@permission_required('main.change_student')
 def student_update(request:HttpRequest, student_id:int):
     student=Student.objects.get(pk=student_id)
     if request.method=='POST':

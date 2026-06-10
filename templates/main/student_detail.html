@@ -5,6 +5,8 @@
 {{ student.full_name }}
 {{ student.phone }}
 {{ student.course }}
+{% if perms.main.change_student %}
 <a href=" {% url 'student_update' student.id %}"> Update student</a></h>
+{% endif %}
 
 {% endblock main %}

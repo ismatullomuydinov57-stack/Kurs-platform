@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+
+   {% include 'boostrap/_style.html' %}
 </head>
 <body>
 
@@ -13,13 +15,21 @@
 </div>
 
 <div>
+    {% if perms.main.add_course %}
     <a  href="{% url 'course_create' %}">Create course</a>
+    {% endif %}
+
+    {% if perms.main.add_student %}
     <a  href="{% url 'student_create' %}">Create student</a>
+    {% endif %}
 </div>
 
     {% for course in courses %}
-    <h><a href="{% url 'course_students' course.id %}">{{course.name}}</a>
-    <a href=" {% url 'course_update' course.id %}"> Update course</a></h>
+    <h> <a href="{% url 'course_students' course.id %}">{{course.name}}</a>
+         {% if perms.main.change_course %}
+    <a href=" {% url 'course_update' course.id %}"> Update course</a>
+        {% endif %}
+    </h>
 
     {% endfor %}
 
@@ -29,5 +39,12 @@
     {% endblock main %}
 </div>
 
+<div>
+    {% block paginator %}
+    {% endblock paginator %}
+</div>
+
+
+{% include 'boostrap/_js.html' %}
 </body>
 </html>
